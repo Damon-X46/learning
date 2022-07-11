@@ -1,6 +1,6 @@
 # learning
 学习的时候看的代码。都是参考别人的
-- transformer：transformer相关的学习
+- models：models相关的学习
 - listnode：链表相关
 - sorting：排序相关算法
 - binary_srarch：二分查找
