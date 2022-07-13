@@ -1,17 +1,18 @@
-def quick_sort2(self, nums, head, tail):
-    if head >= tail:
-        return nums
-    pivot = nums[head]
-    left = head
-    right = tail
-    while left != right:
-        while left < right and nums[right] >= pivot:
-            right -= 1
-        nums[left] = nums[right]
-        while left < right and nums[left] <= pivot:
-            left += 1
-        nums[right] = nums[left]
-    nums[left] = pivot
-    self.quick_sort2(nums, head, left - 1)
-    self.quick_sort2(nums, left + 1, tail)
-    return nums
+class Solution:
+    def isIsomorphic(self, s: str, t: str) -> bool:
+        adict = {}
+        s = list(s)
+        t = list(t)
+        for i in range(len(s)):
+            if s[i] not in adict and t[i] not in adict:
+                adict[s[i]] = t[i]
+            else:
+                if s[i] in adict and adict[s[i]] != t[i]:
+                    return False
+                if t[i] in adict and adict[t[i]] != s[i]:
+                    return False
+        return True
+
+aaa = Solution()
+bbb = aaa.isIsomorphic("paper","title")
+pass
