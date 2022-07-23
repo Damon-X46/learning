@@ -1,46 +1,45 @@
-"""
-    树的子结构
-    输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
-"""
 
-# Definition for a binary tree node.
-class TreeNode:
-    def __init__(self, x):
-        self.val = x
-        self.left = None
-        self.right = None
+import numpy as np
 
-class Solution:
-    def isSubStructure(self, A, B):
-        if not A or not B:
-            return False
 
-        def recur(A, B):
-            if not B: 
-                return True
-            if not A or A.val != B.val: 
-                return False
-            return recur(A.left, B.left) and recur(A.right, B.right)
+def py_nms(dets, threshold):
+    x1 = dets[:, 0]
+    y1 = dets[:, 1]
+    x2 = dets[:, 2]
+    y2 = dets[:, 3]
+    scores = dets[:, 4]
 
-        return recur(A, B) or self.isSubStructure(A.left, B) or self.isSubStructure(A.right, B)
+    areas = (x2 - x1 + 1) * (y2 - y1 + 1)
+    order = scores.argsort()[::-1]
+    keep = []
+    while len(order) > 0:
+        i = order[0]
+        keep.append(i)
+        xx1 = np.maximum(x1[i], x1[order[1:]])
+        yy1 = np.maximum(y1[i], y1[order[1:]])
+        xx2 = np.minimum(x2[i], x2[order[1:]])
+        yy2 = np.minimum(y2[i], y2[order[1:]])
+        w = np.maximum(0, xx2 - xx1 + 1)
+        h = np.maximum(0, yy2 - yy1 + 1)
+        inter = h * w
+        union = areas[i] + areas[order[1:]] - inter
+        iou = inter / union
+        inds = np.where(iou <= threshold)[0]
+        order = order[inds + 1]
+    return keep
 
-# node1, node2, node3, node4, node5 = TreeNode(4), TreeNode(2), TreeNode(3), TreeNode(4), TreeNode(5)
-# node6, node7, node8, node9 = TreeNode(6), TreeNode(7), TreeNode(8), TreeNode(9)
-# node1.left, node1.right = node2, node3
-# node2.left, node2.right = node4, node5
-# node3.left, node3.right = node6, node7
-# node4.left, node4.right = node8, node9
 
-# node11, node22, node33 = TreeNode(4), TreeNode(8), TreeNode(9)
-# node11.left, node11.right = node22, node33
+def main():
+    dets = np.array([[30, 20, 230, 200, 1], 
+                    [50, 50, 260, 220, 0.9], 
+                    [210, 30, 420, 5, 0.8], 
+                    [430, 280, 460, 360, 0.7]])
+    
+    threshold = 0.35
+    keeo_dets = py_nms(dets, threshold)     # 返回的是框的下标编号
+    print(keeo_dets)
+    print(dets[keeo_dets])
 
-node1, node2, node3, node4, node5 = TreeNode(1), TreeNode(0), TreeNode(1), TreeNode(-4), TreeNode(3)
-node1.left, node1.right = node2, node3
-node2.left, node2.right = node4, node5
 
-node11, node22 = TreeNode(1), TreeNode(-4)
-node11.left = node22
-
-aaa = Solution()
-bbb = aaa.isSubStructure(node1, node11)
-print(bbb)
+if __name__ == '__main__':
+    main()
